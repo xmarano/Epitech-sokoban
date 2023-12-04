@@ -6,7 +6,7 @@
 */
 #include "my.h"
 
-static int format_h(void)
+static void format_h(void)
 {
     my_printf("USAGE\n");
     my_printf("     ./my_sokoban map\n");
@@ -14,26 +14,55 @@ static int format_h(void)
     my_printf("     map  file representing the warehouse map, containing '#'");
     my_printf(" for walls,\n          'P' for the player, 'X' for boxes and ");
     my_printf("'0' for storage locations.\n");
+}
+
+int sokoban(char **argv, FILE *file)
+{
+    WINDOW *boite;
+    int taille = my_strlen(argv[1]);
+
+    initscr();
+    while (1) {
+        clear();
+        mvprintw(LINES / 2 , (COLS / 2) - (taille / 2), argv[1]);
+        refresh();
+        if (getch() == ' ')
+            break;
+    }
+    endwin();
     return 0;
 }
 
-int classic(char **argv, FILE *file)
+int info_line(char *buffer)
+{
+    int i = 0;
+    int j = 0;
+
+    while (buffer[i] != '\0') {
+        if (buffer[i] == '\n')
+            j++;
+        i++;
+    }
+    return j;
+}
+
+int sokoban1(char **argv, FILE *file)
 {
     WINDOW *boite;
-    int counter = 0;
-    char c;
+    struct stat info_file;
+    int stats = stat(argv[1], &info_file);
+    int file_read = open(argv[1], O_RDONLY);
+    char buffer[info_file.st_size];
+    int bytes = read(file_read, buffer, sizeof(buffer));
+    int nb_line = info_line(buffer);
 
     initscr();
-    noecho();
-    nodelay(stdscr, TRUE);
-    c = getch();
-    while (c != ' ') {
+    while (1) {
         clear();
-        printw("%c - %dsec\n", c, counter);
-        counter++;
+        mvprintw(0, 0, buffer);
         refresh();
-        napms(1000);
-        c = getch();
+        if (getch() == ' ')
+            break;
     }
     endwin();
     return 0;
@@ -51,7 +80,7 @@ int main(int argc, char **argv)
         format_h();
         return 0;
     } else if (file != NULL) {
-        classic(argv, file);
+        sokoban1(argv, file);
         return 0;
     } else {
         write(2, "my_sokoban : Error name or path file\n", 38);

@@ -18,6 +18,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <ncurses.h>
+#include <fcntl.h>
 #ifndef MY_H
     #define MY_H
 int my_put_nbr(int nb);
