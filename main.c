@@ -4,7 +4,7 @@
 ** File description:
 ** main.c
 */
-#include "my.h"
+#include "sokoban.h"
 
 static void format_h(void)
 {
@@ -16,24 +16,7 @@ static void format_h(void)
     my_printf("'0' for storage locations.\n");
 }
 
-int sokoban(char **argv, FILE *file)
-{
-    WINDOW *boite;
-    int taille = my_strlen(argv[1]);
-
-    initscr();
-    while (1) {
-        clear();
-        mvprintw(LINES / 2 , (COLS / 2) - (taille / 2), argv[1]);
-        refresh();
-        if (getch() == ' ')
-            break;
-    }
-    endwin();
-    return 0;
-}
-
-int info_line(char *buffer)
+static int info_line(char *buffer)
 {
     int i = 0;
     int j = 0;
@@ -46,20 +29,57 @@ int info_line(char *buffer)
     return j;
 }
 
+static int info_column(char *buffer)
+{
+    int i = 0;
+
+    while (buffer[i] != '\n')
+        i++;
+    return i;
+}
+
+static void struct_sokoban(sokoban_t *s, char **argv)
+{
+    stat(argv[1], &s->info_file);
+    s->file_read = open(argv[1], O_RDONLY);
+    s->buffer = malloc(s->info_file.st_size * sizeof(char));
+    s->bytes = read(s->file_read, s->buffer, s->info_file.st_size);
+    s->nb_line = info_line(s->buffer);
+    s->arr = malloc((s->nb_line + 1)* sizeof(char *));
+    close(s->file_read);
+    s->i = 0;
+    s->j = 0;
+    s->k = 0;
+}
+
+void map_in_arr(sokoban_t *s)
+{
+    while (s->buffer[s->k] != '\0') {
+        s->arr[s->i] = malloc((info_column(s->buffer) + 1)* sizeof(char));
+        while (s->buffer[s->k] != '\n') {
+            s->arr[s->i][s->j] = s->buffer[s->k];
+            s->j++;
+            s->k++;
+        }
+        s->arr[s->i][s->j] = '\0';
+        s->j = 0;
+        s->i++;
+        s->k++;
+    }
+    s->arr[s->i] = NULL;
+}
+
 int sokoban1(char **argv, FILE *file)
 {
+    sokoban_t s;
     WINDOW *boite;
-    struct stat info_file;
-    int stats = stat(argv[1], &info_file);
-    int file_read = open(argv[1], O_RDONLY);
-    char buffer[info_file.st_size];
-    int bytes = read(file_read, buffer, sizeof(buffer));
-    int nb_line = info_line(buffer);
 
+    struct_sokoban(&s, argv);
+    map_in_arr(&s);
     initscr();
     while (1) {
         clear();
-        mvprintw(0, 0, buffer);
+        mvprintw(LINES / 2, COLS / 2, s.arr[0]);
         refresh();
         if (getch() == ' ')
             break;
