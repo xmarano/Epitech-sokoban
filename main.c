@@ -79,7 +79,8 @@ int sokoban1(char **argv, FILE *file)
     initscr();
     while (1) {
         clear();
-        mvprintw(LINES / 2, COLS / 2, s.arr[0]);
+        for (int i = 0; s.nb_line > i; i++)
+            mvprintw(LINES / 2 + i, COLS / 2, s.arr[i]);
         refresh();
         if (getch() == ' ')
             break;
