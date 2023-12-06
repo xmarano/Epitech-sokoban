@@ -53,6 +53,8 @@ static void struct_sokoban(sokoban_t *s, char **argv)
     s->nb_x = 0;
     s->nb_o = 0;
     s->nb_p = 0;
+    s->pos_p_x = 0;
+    s->pos_p_y = 0;
 }
 
 void map_in_arr(sokoban_t *s)
@@ -82,23 +84,7 @@ void check_map(sokoban_t *s, int i, int j)
         s->nb_o++;
 }
 
-void display_map(sokoban_t *s)
-{
-    WINDOW *boite;
-
-    initscr();
-    while (1) {
-        clear();
-        for (int i = 0; s->nb_line > i; i++)
-            mvprintw(LINES / 2 + i, COLS / 2, s->arr[i]);
-        refresh();
-        if (getch() == ' ')
-            break;
-    }
-    endwin();
-}
-
-int sokoban1(char **argv, FILE *file)
+int sokoban(char **argv, FILE *file)
 {
     sokoban_t s;
 
@@ -127,7 +113,7 @@ int main(int argc, char **argv)
         format_h();
         return 0;
     } else if (file != NULL) {
-        return_nb = sokoban1(argv, file);
+        return_nb = sokoban(argv, file);
         return return_nb;
     } else {
         write(2, "my_sokoban : Error name or path file\n", 38);

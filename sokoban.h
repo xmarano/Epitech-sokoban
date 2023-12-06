@@ -20,5 +20,8 @@ typedef struct s {
     int nb_x;
     int nb_p;
     int nb_o;
+    int pos_p_x;
+    int pos_p_y;
 } sokoban_t;
+void display_map(sokoban_t *s);
 #endif

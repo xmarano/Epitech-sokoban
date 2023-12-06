@@ -16,6 +16,7 @@ SRCLIB	=	lib/my_atoi.c 		\
 			lib/my_put_nbr_recursive.c	\
 
 SRCNAME	=	main.c		\
+			in_game.c 	\
 
 
 LIB = libmy.a
