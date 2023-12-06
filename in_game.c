@@ -58,6 +58,15 @@ static void move_left(sokoban_t *s)
     }
 }
 
+int map_x(char *str)
+{
+    int i = 0;
+
+    while (str[i] != '\0')
+        i++;
+    return i / 2;
+}
+
 void key_pressed(sokoban_t *s, int key)
 {
     if (key == 'A')
@@ -76,10 +85,12 @@ void display_map(sokoban_t *s)
     int key;
 
     initscr();
+    noecho();
     while (1) {
         clear();
         for (int i = 0; s->nb_line > i; i++)
-            mvprintw(LINES / 2 + i, COLS / 2, s->arr[i]);
+            mvprintw(LINES / 2 + i - s->nb_line,
+            COLS / 2 - map_x(s->arr[i]), s->arr[i]);
         key = getch();
         key_pressed(s, key);
         refresh();
