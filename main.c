@@ -50,6 +50,9 @@ static void struct_sokoban(sokoban_t *s, char **argv)
     s->i = 0;
     s->j = 0;
     s->k = 0;
+    s->nb_x = 0;
+    s->nb_o = 0;
+    s->nb_p = 0;
 }
 
 void map_in_arr(sokoban_t *s)
@@ -69,29 +72,52 @@ void map_in_arr(sokoban_t *s)
     s->arr[s->i] = NULL;
 }
 
-int sokoban1(char **argv, FILE *file)
+void check_map(sokoban_t *s, int i, int j)
 {
-    sokoban_t s;
+    if (s->arr[i][j] == 'P')
+        s->nb_p++;
+    if (s->arr[i][j] == 'X')
+        s->nb_x++;
+    if (s->arr[i][j] == 'O')
+        s->nb_o++;
+}
+
+void display_map(sokoban_t *s)
+{
     WINDOW *boite;
 
-    struct_sokoban(&s, argv);
-    map_in_arr(&s);
     initscr();
     while (1) {
         clear();
-        for (int i = 0; s.nb_line > i; i++)
-            mvprintw(LINES / 2 + i, COLS / 2, s.arr[i]);
+        for (int i = 0; s->nb_line > i; i++)
+            mvprintw(LINES / 2 + i, COLS / 2, s->arr[i]);
         refresh();
         if (getch() == ' ')
             break;
     }
     endwin();
+}
+
+int sokoban1(char **argv, FILE *file)
+{
+    sokoban_t s;
+
+    struct_sokoban(&s, argv);
+    map_in_arr(&s);
+    for (int i = 0; s.arr[i] != NULL; i++) {
+        for (int j = 0; s.arr[i][j]; j++)
+            check_map(&s, i, j);
+    }
+    if (s.nb_p != 1 || s.nb_o != s.nb_x)
+        return 84;
+    display_map(&s);
     return 0;
 }
 
 int main(int argc, char **argv)
 {
     FILE *file = fopen(argv[1], "r");
+    int return_nb;
 
     if (argc != 2) {
         write(2, "my_sokoban : Error argument\n", 29);
@@ -101,8 +127,8 @@ int main(int argc, char **argv)
         format_h();
         return 0;
     } else if (file != NULL) {
-        sokoban1(argv, file);
-        return 0;
+        return_nb = sokoban1(argv, file);
+        return return_nb;
     } else {
         write(2, "my_sokoban : Error name or path file\n", 38);
         return 84;

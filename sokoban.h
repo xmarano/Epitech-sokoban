@@ -17,5 +17,8 @@ typedef struct s {
     int i;
     int j;
     int k;
+    int nb_x;
+    int nb_p;
+    int nb_o;
 } sokoban_t;
 #endif
