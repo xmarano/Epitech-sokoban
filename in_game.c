@@ -25,36 +25,73 @@ void get_pos(sokoban_t *s)
 static void move_up(sokoban_t *s)
 {
     get_pos(s);
-    if (s->arr[s->pos_p_y - 1][s->pos_p_x] != '#') {
+    if (s->arr[s->pos_p_y - 1][s->pos_p_x] == ' '
+    && s->arr[s->pos_p_y - 2] != NULL) {
         s->arr[s->pos_p_y][s->pos_p_x] = ' ';
         s->arr[s->pos_p_y - 1][s->pos_p_x] = 'P';
+    }
+    if (s->arr[s->pos_p_y - 1][s->pos_p_x] == 'X'
+    && s->arr[s->pos_p_y - 2][s->pos_p_x] == ' '
+    && s->arr[s->pos_p_y - 3] != NULL) {
+        s->arr[s->pos_p_y][s->pos_p_x] = ' ';
+        s->arr[s->pos_p_y - 1][s->pos_p_x] = 'P';
+        s->arr[s->pos_p_y - 2][s->pos_p_x] = 'X';
     }
 }
 
 static void move_down(sokoban_t *s)
 {
     get_pos(s);
-    if (s->arr[s->pos_p_y + 1][s->pos_p_x] != '#') {
+    if (s->arr[s->pos_p_y + 1][s->pos_p_x] == ' '
+    && s->arr[s->pos_p_y + 2] != NULL) {
         s->arr[s->pos_p_y][s->pos_p_x] = ' ';
         s->arr[s->pos_p_y + 1][s->pos_p_x] = 'P';
+    }
+    if (s->arr[s->pos_p_y + 1][s->pos_p_x] == 'X'
+    && s->arr[s->pos_p_y + 2][s->pos_p_x] == ' '
+    && s->arr[s->pos_p_y + 3] != NULL) {
+        s->arr[s->pos_p_y][s->pos_p_x] = ' ';
+        s->arr[s->pos_p_y + 1][s->pos_p_x] = 'P';
+        s->arr[s->pos_p_y + 2][s->pos_p_x] = 'X';
     }
 }
 
 static void move_right(sokoban_t *s)
 {
     get_pos(s);
-    if (s->arr[s->pos_p_y][s->pos_p_x + 1] != '#') {
+    if (s->arr[s->pos_p_y][s->pos_p_x + 1] == ' '
+    && s->arr[s->pos_p_y][s->pos_p_x + 2] != '\0') {
         s->arr[s->pos_p_y][s->pos_p_x] = ' ';
         s->arr[s->pos_p_y][s->pos_p_x + 1] = 'P';
+    }
+    if (s->arr[s->pos_p_y][s->pos_p_x + 1] == 'X'
+    && s->arr[s->pos_p_y][s->pos_p_x + 2] == ' '
+    && s->arr[s->pos_p_y][s->pos_p_x + 3] != '\0') {
+        s->arr[s->pos_p_y][s->pos_p_x] = ' ';
+        s->arr[s->pos_p_y][s->pos_p_x + 1] = 'P';
+        s->arr[s->pos_p_y][s->pos_p_x + 2] = 'X';
     }
 }
 
 static void move_left(sokoban_t *s)
 {
     get_pos(s);
-    if (s->arr[s->pos_p_y][s->pos_p_x - 1] != '#') {
+    if (s->arr[s->pos_p_y][s->pos_p_x - 1] == ' '
+    && s->arr[s->pos_p_y][s->pos_p_x - 2] != '\0') {
         s->arr[s->pos_p_y][s->pos_p_x] = ' ';
         s->arr[s->pos_p_y][s->pos_p_x - 1] = 'P';
+    }
+    if (s->arr[s->pos_p_y][s->pos_p_x - 1] == 'X'
+    && s->arr[s->pos_p_y][s->pos_p_x - 2] == ' '
+    && s->arr[s->pos_p_y][s->pos_p_x - 3] != '\0') {
+        s->arr[s->pos_p_y][s->pos_p_x] = ' ';
+        s->arr[s->pos_p_y][s->pos_p_x - 1] = 'P';
+        s->arr[s->pos_p_y][s->pos_p_x - 2] = 'X';
+    }
+    if (s->arr[s->pos_p_y][s->pos_p_x - 1] == 'O') {
+        s->arr[s->pos_p_y][s->pos_p_x] = ' ';
+        s->arr[s->pos_p_y][s->pos_p_x - 1] = 'P';
+        s->arr[s->pos_p_y][s->pos_p_x - 2] = 'X';
     }
 }
 
@@ -77,6 +114,8 @@ void key_pressed(sokoban_t *s, int key)
         move_right(s);
     if (key == 'D')
         move_left(s);
+    if (key == ' ')
+        s->arr = map_in_map_clone(s);
 }
 
 void display_map(sokoban_t *s)

@@ -14,14 +14,15 @@ typedef struct s {
     int bytes;
     int nb_line;
     char **arr;
-    int i;
-    int j;
-    int k;
     int nb_x;
     int nb_p;
     int nb_o;
+    int nb_e;
     int pos_p_x;
     int pos_p_y;
+    int pos_O_x;
+    int pos_O_y;
 } sokoban_t;
+char **map_in_map_clone(sokoban_t *s);
 void display_map(sokoban_t *s);
 #endif

@@ -47,31 +47,58 @@ static void struct_sokoban(sokoban_t *s, char **argv)
     s->nb_line = info_line(s->buffer);
     s->arr = malloc((s->nb_line + 1)* sizeof(char *));
     close(s->file_read);
-    s->i = 0;
-    s->j = 0;
-    s->k = 0;
     s->nb_x = 0;
     s->nb_o = 0;
     s->nb_p = 0;
+    s->nb_e = 0;
     s->pos_p_x = 0;
     s->pos_p_y = 0;
+    s->pos_O_x = 0;
+    s->pos_O_y = 0;
 }
 
 void map_in_arr(sokoban_t *s)
 {
-    while (s->buffer[s->k] != '\0') {
-        s->arr[s->i] = malloc((info_column(s->buffer) + 1)* sizeof(char));
-        while (s->buffer[s->k] != '\n') {
-            s->arr[s->i][s->j] = s->buffer[s->k];
-            s->j++;
-            s->k++;
+    int i = 0;
+    int j = 0;
+    int k = 0;
+
+    while (s->buffer[k] != '\0') {
+        s->arr[i] = malloc((info_column(s->buffer) + 1)* sizeof(char));
+        while (s->buffer[k] != '\n') {
+            s->arr[i][j] = s->buffer[k];
+            j++;
+            k++;
         }
-        s->arr[s->i][s->j] = '\0';
-        s->j = 0;
-        s->i++;
-        s->k++;
+        s->arr[i][j] = '\0';
+        j = 0;
+        i++;
+        k++;
     }
-    s->arr[s->i] = NULL;
+    s->arr[i] = NULL;
+}
+
+char **map_in_map_clone(sokoban_t *s)
+{
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    char **map_clone = malloc((s->nb_line + 1)* sizeof(char *));
+
+    while (s->buffer[k] != '\0') {
+        map_clone[i] = malloc((info_column(s->buffer) + 1)* sizeof(char));
+        while (s->buffer[k] != '\n') {
+            map_clone[i][j] = s->buffer[k];
+            j++;
+            k++;
+        }
+        map_clone[i][j] = '\0';
+        j = 0;
+        i++;
+        k++;
+    }
+    map_clone[i] = NULL;
+    return map_clone;
 }
 
 void check_map(sokoban_t *s, int i, int j)
@@ -82,6 +109,9 @@ void check_map(sokoban_t *s, int i, int j)
         s->nb_x++;
     if (s->arr[i][j] == 'O')
         s->nb_o++;
+    if (s->arr[i][j] != 'P' && s->arr[i][j] != 'O'
+    && s->arr[i][j] != 'X' && s->arr[i][j] != '#' && s->arr[i][j] != ' ')
+        s->nb_e++;
 }
 
 int sokoban(char **argv, FILE *file)
@@ -94,7 +124,7 @@ int sokoban(char **argv, FILE *file)
         for (int j = 0; s.arr[i][j]; j++)
             check_map(&s, i, j);
     }
-    if (s.nb_p != 1 || s.nb_o != s.nb_x)
+    if (s.nb_p != 1 || s.nb_o != s.nb_x || s.nb_e != 0)
         return 84;
     display_map(&s);
     return 0;
