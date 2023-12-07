@@ -6,7 +6,7 @@
 */
 #include "sokoban.h"
 
-void get_pos(sokoban_t *s)
+static void get_pos(sokoban_t *s)
 {
     int i = 0;
     int j = 0;
@@ -25,34 +25,46 @@ void get_pos(sokoban_t *s)
 static void move_up(sokoban_t *s)
 {
     get_pos(s);
-    if (s->arr[s->pos_p_y - 1][s->pos_p_x] == ' '
-    && s->arr[s->pos_p_y - 2] != NULL) {
+    if (s->arr[s->pos_p_y - 1][s->pos_p_x] == ' ') {
         s->arr[s->pos_p_y][s->pos_p_x] = ' ';
         s->arr[s->pos_p_y - 1][s->pos_p_x] = 'P';
     }
+    if (s->arr[s->pos_p_y - 2] == NULL)
+        return;
     if (s->arr[s->pos_p_y - 1][s->pos_p_x] == 'X'
-    && s->arr[s->pos_p_y - 2][s->pos_p_x] == ' '
-    && s->arr[s->pos_p_y - 3] != NULL) {
+    && s->arr[s->pos_p_y - 2][s->pos_p_x] == ' ') {
         s->arr[s->pos_p_y][s->pos_p_x] = ' ';
         s->arr[s->pos_p_y - 1][s->pos_p_x] = 'P';
         s->arr[s->pos_p_y - 2][s->pos_p_x] = 'X';
+    }
+    if (s->arr[s->pos_p_y - 2][s->pos_p_x ] == 'O'
+    && s->arr[s->pos_p_y - 1][s->pos_p_x] == 'X') {
+        s->arr[s->pos_p_y][s->pos_p_x] = ' ';
+        s->arr[s->pos_p_y - 1][s->pos_p_x ] = 'P';
+        s->arr[s->pos_p_y - 2][s->pos_p_x ] = 'X';
     }
 }
 
 static void move_down(sokoban_t *s)
 {
     get_pos(s);
-    if (s->arr[s->pos_p_y + 1][s->pos_p_x] == ' '
-    && s->arr[s->pos_p_y + 2] != NULL) {
+    if (s->arr[s->pos_p_y + 1][s->pos_p_x] == ' ') {
         s->arr[s->pos_p_y][s->pos_p_x] = ' ';
         s->arr[s->pos_p_y + 1][s->pos_p_x] = 'P';
     }
+    if (s->arr[s->pos_p_y + 2] == NULL)
+        return;
     if (s->arr[s->pos_p_y + 1][s->pos_p_x] == 'X'
-    && s->arr[s->pos_p_y + 2][s->pos_p_x] == ' '
-    && s->arr[s->pos_p_y + 3] != NULL) {
+    && s->arr[s->pos_p_y + 2][s->pos_p_x] == ' ') {
         s->arr[s->pos_p_y][s->pos_p_x] = ' ';
         s->arr[s->pos_p_y + 1][s->pos_p_x] = 'P';
         s->arr[s->pos_p_y + 2][s->pos_p_x] = 'X';
+    }
+    if (s->arr[s->pos_p_y + 2][s->pos_p_x ] == 'O'
+    && s->arr[s->pos_p_y + 1][s->pos_p_x] == 'X') {
+        s->arr[s->pos_p_y][s->pos_p_x] = ' ';
+        s->arr[s->pos_p_y + 1][s->pos_p_x ] = 'P';
+        s->arr[s->pos_p_y + 2][s->pos_p_x ] = 'X';
     }
 }
 
@@ -67,6 +79,12 @@ static void move_right(sokoban_t *s)
     if (s->arr[s->pos_p_y][s->pos_p_x + 1] == 'X'
     && s->arr[s->pos_p_y][s->pos_p_x + 2] == ' '
     && s->arr[s->pos_p_y][s->pos_p_x + 3] != '\0') {
+        s->arr[s->pos_p_y][s->pos_p_x] = ' ';
+        s->arr[s->pos_p_y][s->pos_p_x + 1] = 'P';
+        s->arr[s->pos_p_y][s->pos_p_x + 2] = 'X';
+    }
+    if (s->arr[s->pos_p_y][s->pos_p_x + 2] == 'O'
+    && s->arr[s->pos_p_y][s->pos_p_x + 1] == 'X') {
         s->arr[s->pos_p_y][s->pos_p_x] = ' ';
         s->arr[s->pos_p_y][s->pos_p_x + 1] = 'P';
         s->arr[s->pos_p_y][s->pos_p_x + 2] = 'X';
@@ -88,7 +106,8 @@ static void move_left(sokoban_t *s)
         s->arr[s->pos_p_y][s->pos_p_x - 1] = 'P';
         s->arr[s->pos_p_y][s->pos_p_x - 2] = 'X';
     }
-    if (s->arr[s->pos_p_y][s->pos_p_x - 1] == 'O') {
+    if (s->arr[s->pos_p_y][s->pos_p_x - 2] == 'O'
+    && s->arr[s->pos_p_y][s->pos_p_x - 1] == 'X') {
         s->arr[s->pos_p_y][s->pos_p_x] = ' ';
         s->arr[s->pos_p_y][s->pos_p_x - 1] = 'P';
         s->arr[s->pos_p_y][s->pos_p_x - 2] = 'X';
@@ -104,18 +123,40 @@ int map_x(char *str)
     return i / 2;
 }
 
-void key_pressed(sokoban_t *s, int key)
+void key_pressed(sokoban_t *s, int *key)
 {
-    if (key == 'A')
+    if (*key == 'A')
         move_up(s);
-    if (key == 'B')
+    if (*key == 'B')
         move_down(s);
-    if (key == 'C')
+    if (*key == 'C')
         move_right(s);
-    if (key == 'D')
+    if (*key == 'D')
         move_left(s);
-    if (key == ' ')
+    if (*key == ' ')
         s->arr = map_in_map_clone(s);
+}
+
+void check_0(sokoban_t *s, int i)
+{
+    for (int j = 0; s->arr[i][j]; j++) {
+        if (s->arr[i][j] == 'O')
+            s->check_O++;
+    }
+}
+
+void display_while(sokoban_t *s, int *key)
+{
+    clear();
+    for (int i = 0; s->nb_line > i; i++)
+        mvprintw(LINES / 2 + i - s->nb_line,
+        COLS / 2 - map_x(s->arr[i]), s->arr[i]);
+    *key = getch();
+    key_pressed(s, key);
+    refresh();
+    s->check_O = 0;
+    for (int i = 0; s->arr[i] != NULL; i++)
+        check_0(s, i);
 }
 
 void display_map(sokoban_t *s)
@@ -126,13 +167,9 @@ void display_map(sokoban_t *s)
     initscr();
     noecho();
     while (1) {
-        clear();
-        for (int i = 0; s->nb_line > i; i++)
-            mvprintw(LINES / 2 + i - s->nb_line,
-            COLS / 2 - map_x(s->arr[i]), s->arr[i]);
-        key = getch();
-        key_pressed(s, key);
-        refresh();
+        display_while(s, &key);
+        if (s->check_O == 0)
+            break;
         if (key == 'q')
             break;
     }

@@ -55,6 +55,7 @@ static void struct_sokoban(sokoban_t *s, char **argv)
     s->pos_p_y = 0;
     s->pos_O_x = 0;
     s->pos_O_y = 0;
+    s->check_O = 0;
 }
 
 void map_in_arr(sokoban_t *s)
