@@ -51,8 +51,8 @@ static void struct_sokoban(sokoban_t *s, char **argv)
     s->nb_o = 0;
     s->nb_p = 0;
     s->nb_e = 0;
-    s->pos_p_x = 0;
-    s->pos_p_y = 0;
+    s->p_x = 0;
+    s->p_y = 0;
     s->pos_O_x = 0;
     s->pos_O_y = 0;
     s->check_O = 0;
