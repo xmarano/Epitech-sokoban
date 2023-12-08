@@ -41,6 +41,8 @@ static void move_up2(sokoban_t *s)
 void move_up(sokoban_t *s)
 {
     get_pos(s);
+    if (s->p_y - 2 < 0)
+        return;
     if (s->arr[s->p_y - 2] == NULL)
         return;
     move_up2(s);

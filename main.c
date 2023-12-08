@@ -44,6 +44,7 @@ static void struct_sokoban(sokoban_t *s, char **argv)
     s->file_read = open(argv[1], O_RDONLY);
     s->buffer = malloc(s->info_file.st_size * sizeof(char));
     s->bytes = read(s->file_read, s->buffer, s->info_file.st_size);
+    s->buffer[s->bytes] = '\0';
     s->nb_line = info_line(s->buffer);
     s->arr = malloc((s->nb_line + 1)* sizeof(char *));
     close(s->file_read);
