@@ -29,6 +29,8 @@ void move_up(sokoban_t *s);
 void move_down(sokoban_t *s);
 void move_left(sokoban_t *s);
 void move_right(sokoban_t *s);
+void if_move_left(sokoban_t *s);
+void if_move_right(sokoban_t *s);
 char **map_in_map_clone(sokoban_t *s);
 void display_map(sokoban_t *s);
 #endif

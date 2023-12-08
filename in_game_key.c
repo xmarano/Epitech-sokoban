@@ -15,6 +15,53 @@ void left_o(sokoban_t *s)
     }
 }
 
+static void first_while(sokoban_t *s, int *i, int *j, int *nb_x)
+{
+    while (s->arr[*i][*j] != '\0') {
+        if (s->arr[*i][*j] == 'X')
+            (*nb_x)++;
+        (*j)++;
+    }
+    *j = 0;
+    (*i)++;
+}
+
+static void second_while(sokoban_t *s, int *i, int *j, int *x)
+{
+    if (s->arr[*i][*j] == 'X') {
+        if (s->arr[(*i) - 1][*j] == '#' && s->arr[(*i)][(*j) + 1] == '#')
+            (*x)++;
+        if (s->arr[(*i) - 1][(*j)] == '#' && s->arr[(*i)][(*j) - 1] == '#')
+            (*x)++;
+        if (s->arr[(*i) + 1][(*j)] == '#' && s->arr[(*i)][(*j) + 1] == '#')
+            (*x)++;
+        if (s->arr[(*i) + 1][(*j)] == '#' && s->arr[(*i)][(*j) - 1] == '#')
+            (*x)++;
+    }
+    (*j)++;
+}
+
+static void loose_x(sokoban_t *s)
+{
+    int i = 0;
+    int j = 0;
+    int nb_x = 0;
+    int x = 0;
+
+    while (s->arr[i] != NULL)
+        first_while(s, &i, &j, &nb_x);
+    i = 0;
+    j = 0;
+    while (s->arr[i] != NULL) {
+        while (s->arr[i][j] != '\0')
+            second_while(s, &i, &j, &x);
+        j = 0;
+        i++;
+    }
+    if (nb_x == x)
+        exit(1);
+}
+
 static void move_up2(sokoban_t *s)
 {
     if (s->arr[s->p_y - 1][s->p_x] == 'O' ||
@@ -29,6 +76,7 @@ static void move_up2(sokoban_t *s)
         s->arr[s->p_y - 1][s->p_x] = 'P';
         s->arr[s->p_y - 2][s->p_x] = 'X';
         left_o(s);
+        loose_x(s);
     }
     if (s->arr[s->p_y - 2][s->p_x] == 'O' &&
     s->arr[s->p_y - 1][s->p_x] == 'X') {
@@ -62,6 +110,7 @@ static void move_down2(sokoban_t *s)
         s->arr[s->p_y + 1][s->p_x] = 'P';
         s->arr[s->p_y + 2][s->p_x] = 'X';
         left_o(s);
+        loose_x(s);
     }
     if (s->arr[s->p_y + 2][s->p_x ] == 'O' &&
     s->arr[s->p_y + 1][s->p_x] == 'X') {
@@ -90,10 +139,9 @@ void move_right(sokoban_t *s)
     }
     if (s->arr[s->p_y][s->p_x + 1] == 'X' && s->arr[s->p_y][s->p_x + 2] == ' '
     && s->arr[s->p_y][s->p_x + 3] != '\0') {
-        s->arr[s->p_y][s->p_x] = ' ';
-        s->arr[s->p_y][s->p_x + 1] = 'P';
-        s->arr[s->p_y][s->p_x + 2] = 'X';
+        if_move_right(s);
         left_o(s);
+        loose_x(s);
     }
     if (s->arr[s->p_y][s->p_x + 2] == 'O'
     && s->arr[s->p_y][s->p_x + 1] == 'X') {
@@ -114,10 +162,9 @@ void move_left(sokoban_t *s)
     }
     if (s->arr[s->p_y][s->p_x - 1] == 'X' && s->arr[s->p_y][s->p_x - 2] == ' '
     && s->arr[s->p_y][s->p_x - 3] != '\0') {
-        s->arr[s->p_y][s->p_x] = ' ';
-        s->arr[s->p_y][s->p_x - 1] = 'P';
-        s->arr[s->p_y][s->p_x - 2] = 'X';
+        if_move_left(s);
         left_o(s);
+        loose_x(s);
     }
     if (s->arr[s->p_y][s->p_x - 2] == 'O'
     && s->arr[s->p_y][s->p_x - 1] == 'X') {

@@ -18,6 +18,7 @@ SRCLIB	=	lib/my_atoi.c 		\
 SRCNAME	=	main.c		\
 			in_game.c 	\
 			in_game_key.c	\
+			move_key.c 	\
 
 
 LIB = libmy.a
